@@ -8,7 +8,10 @@ int buttonstate = 0;
 bool buttonflip;
 int frequency = 0;
 
-
+const int In1 = 9;
+const int In2 = 10;
+const int In3 = 11;
+const int In4 = 12;
 const int S0 = A0;
 const int S1 = A1;
 const int S2 = A2;
@@ -17,7 +20,10 @@ const int sensorOut = A4;
 const int OE = A5;
 
 void setup() {
-
+  pinMode(In1, OUTPUT);
+  pinMode(In2, OUTPUT);
+  pinMode(In3, OUTPUT);
+  pinMode(In4, OUTPUT);
   pinMode(S0, OUTPUT);
   pinMode(S1, OUTPUT);
   pinMode(S2, OUTPUT);
@@ -34,10 +40,8 @@ void setup() {
   Serial.print("Goon ");
   pinMode(button, INPUT);
 }
+
 void colour() {
-  digitalWrite(S2, LOW);
-  digitalWrite(S3, LOW);
-  frequency = pulseIn(sensorOut, LOW);
   Serial.print("R= ");      //printing name
   Serial.print(frequency);  //printing RED color frequency
   Serial.print("  ");
@@ -59,10 +63,9 @@ void colour() {
   Serial.println("  ");
   delay(1000);
 }
-void loop()
 
-{
-
+void loop() {
+  sensorfunc();
   buttonstate = digitalRead(button);
   if (buttonstate == HIGH) {
 
@@ -72,16 +75,45 @@ void loop()
   }
   if (buttonflip == true) {
     colour();
-  }
-  else{
+  } else {
     qtr.read(sensorValues);
-     for (uint8_t i = 0; i < SensorCount; i++) {
+    for (uint8_t i = 0; i < SensorCount; i++) {
       Serial.print(sensorValues[i]);
       Serial.print('\t');
+    }
+    Serial.println();
+    delay(500);
   }
-  Serial.println();
-  delay(500);
+}
+
+void sensorfunc() {
+
+  uint16_t position = qtr.readLineBlack(sensorValues);
+  Serial.println(position);
+
+  if (sensorValues[0] + sensorValues[1] >= 3000) {
+    digitalWrite(In1, HIGH);
+    digitalWrite(In2, LOW);
+    digitalWrite(In3, LOW);
+    digitalWrite(In4, LOW);
+    Serial.print("MOVING TO THE LOEFT");
+  } else if (sensorValues[1] + sensorValues[2] >= 3000) {
+    digitalWrite(In3, HIGH);
+    digitalWrite(In2, LOW);
+    digitalWrite(In1, HIGH);
+    digitalWrite(In4, LOW);
+    Serial.print("MOVING TO THE forward");
+  } else if (sensorValues[2] + sensorValues[3] >= 3000) {
+    digitalWrite(In1, LOW);
+    digitalWrite(In2, LOW);
+    digitalWrite(In3, HIGH);
+    digitalWrite(In4, LOW);
+    Serial.print("MOVING TO THE RIGHT");
+  } else if (sensorValues[1] + sensorValues[2] + sensorValues[3] + sensorValues[0] >= 6000) {
+    digitalWrite(In1, LOW);
+    digitalWrite(In2, LOW);
+    digitalWrite(In3, LOW);
+    digitalWrite(In4, LOW);
+    Serial.print("MOVING TO THE NO");
   }
-  
-  
 }
