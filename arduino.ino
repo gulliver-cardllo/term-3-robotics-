@@ -42,29 +42,31 @@ void setup() {
 }
 
 void colour() {
-  Serial.print("R= ");      //printing name
-  Serial.print(frequency);  //printing RED color frequency
+  // Red Colour Code
+  Serial.print("R= ");      
+  Serial.print(frequency); 
   Serial.print("  ");
   delay(100);
-
+  // Green Colour Code
   digitalWrite(S2, HIGH);
   digitalWrite(S3, HIGH);
   frequency = pulseIn(sensorOut, LOW);
-  Serial.print("G= ");      //printing name
-  Serial.print(frequency);  //printing Green color frequency
+  Serial.print("G= ");      
+  Serial.print(frequency);  
   Serial.print("  ");
   delay(100);
-
+  // Blue Colour Code
   digitalWrite(S2, LOW);
   digitalWrite(S3, HIGH);
   frequency = pulseIn(sensorOut, LOW);
-  Serial.print("B= ");      //printing name
-  Serial.print(frequency);  //printing Blue color frequency
+  Serial.print("B= ");      
+  Serial.print(frequency);  
   Serial.println("  ");
   delay(1000);
 }
 
 void loop() {
+  
   sensorfunc();
   buttonstate = digitalRead(button);
   if (buttonstate == HIGH) {
@@ -73,6 +75,7 @@ void loop() {
     Serial.println("Button Pressed");
     delay(200);
   }
+  // toggling between the line sensor array and the colour sensor
   if (buttonflip == true) {
     colour();
   } else {
@@ -88,6 +91,7 @@ void loop() {
 
 void sensorfunc() {
 
+  // this code can be updated to use the built in location function in qtr
   uint16_t position = qtr.readLineBlack(sensorValues);
   Serial.println(position);
 
